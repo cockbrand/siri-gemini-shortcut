@@ -1,0 +1,5 @@
+To be called by an Apple Shortcut
+Runs in Cloud Run
+
+Trigger: "[Hey ]Siri, ask Gemini"
+
