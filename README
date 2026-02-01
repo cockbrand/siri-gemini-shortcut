@@ -3,3 +3,4 @@ Runs as a Cloud Run Function. You need to add the API key to the GEMINI_API_KEY 
 
 Trigger: "[Hey ]Siri, ask Gemini"
 
+![Screenshot of Apple Shortcut](https://github.com/cockbrand/siri-gemini-shortcut/blob/main/Apple%20Shortcut.png)
