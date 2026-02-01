@@ -1,5 +1,5 @@
-To be called by an Apple Shortcut
-Runs in Cloud Run
+To be called by an Apple Shortcut, see screenshot for configuration.
+Runs as a Cloud Run Function. You need to add the API key to the GEMINI_API_KEY environment variable in your instance.
 
 Trigger: "[Hey ]Siri, ask Gemini"
 
