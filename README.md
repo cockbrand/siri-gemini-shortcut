@@ -1,4 +1,4 @@
-To be called by an Apple Shortcut, see screenshot for configuration.  
+To be called by an Apple Shortcut, see screenshot for configuration. In dense urban areas, you may want to use a less precise location for speed.  
 Runs as a Cloud Run Function. You need to add the API key to the GEMINI_API_KEY environment variable in your instance.  
 
 Deployment:  
