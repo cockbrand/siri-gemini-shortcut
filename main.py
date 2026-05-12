@@ -40,7 +40,7 @@ def siri_gemini(request):
     def generate():
         try:
             response_stream = client.models.generate_content_stream(
-                model='gemini-3-flash-preview',
+                model='gemini-3.1-flash-lite',
                 contents=user_query,
                 config=types.GenerateContentConfig(
                     system_instruction=system_prompt,
