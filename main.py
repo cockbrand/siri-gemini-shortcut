@@ -4,26 +4,36 @@ from flask import Response, stream_with_context, request, jsonify
 from google import genai
 from google.genai import types
 
-# Initialize client globally for better Cloud Run performance
-api_key = os.environ.get("GEMINI_API_KEY")
+# --- CONFIGURATION ---
+# The model ID is now centralized here for easy updates.
+MODEL_ID = "gemini-3.1-flash-lite" 
+API_KEY = os.environ.get("GEMINI_API_KEY")
+
+# Initialize client globally for better performance in serverless environments
 client = genai.Client(
-    api_key=api_key,
+    api_key=API_KEY,
     http_options=types.HttpOptions(api_version='v1beta')
-) if api_key else None
+) if API_KEY else None
 
 def siri_gemini(request):
+    """
+    Flask entry point for the Siri-Gemini integration.
+    Handles user queries with location context and streams the response.
+    """
     if not client:
-        return jsonify({"error": "GEMINI_API_KEY not set."}), 500
+        logging.error("GEMINI_API_KEY is not configured.")
+        return jsonify({"error": "Server configuration error."}), 500
 
-    request_json = request.get_json(silent=True)
-    user_query = request_json.get('query') if request_json else None
+    # Parse request data
+    request_json = request.get_json(silent=True) or {}
+    user_query = request_json.get('query')
     lat = request_json.get('lat')
     lon = request_json.get('lon')
 
     if not user_query:
         return jsonify({"error": "Missing 'query' in request body."}), 400
 
-    # Pass location datan and instruct the model to ignore it unless necessary
+    # Prepare location context
     raw_location = f"User coordinates: {lat}, {lon}." if lat and lon else "Location unknown."
 
     system_prompt = (
@@ -39,14 +49,16 @@ def siri_gemini(request):
 
     def generate():
         try:
+            # Use the global MODEL_ID variable here
             response_stream = client.models.generate_content_stream(
-                model='gemini-3.1-flash-lite',
+                model=MODEL_ID,
                 contents=user_query,
                 config=types.GenerateContentConfig(
                     system_instruction=system_prompt,
+                    # Note: thinking_config availability depends on the specific model used
                     thinking_config=types.ThinkingConfig(
                         thinking_level=types.ThinkingLevel.LOW 
-                    )
+                    ) if "thinking" in MODEL_ID.lower() else None
                 )
             )
             
@@ -55,7 +67,7 @@ def siri_gemini(request):
                     yield chunk.text
                     
         except Exception as e:
-            logging.error(f"Streaming error: {e}")
+            logging.error(f"Streaming error with model {MODEL_ID}: {e}")
             yield f"I'm sorry, I encountered an error: {str(e)}"
 
     return Response(stream_with_context(generate()), mimetype='text/plain')
