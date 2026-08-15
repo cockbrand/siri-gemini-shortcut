@@ -6,7 +6,7 @@ from google.genai import types
 
 # --- CONFIGURATION ---
 # The model ID is now centralized here for easy updates.
-MODEL_ID = "gemini-3.1-flash-lite" 
+MODEL_ID = "gemini-3.7-flash" 
 API_KEY = os.environ.get("GEMINI_API_KEY")
 
 # Initialize client globally for better performance in serverless environments
